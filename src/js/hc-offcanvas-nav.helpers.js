@@ -452,17 +452,21 @@
     const transform = browserPrefix('transform');
 
     return ($el, val, position) => {
+
       if (val === false || val === '') {
         $el.style.transform = '';
+        $($el).width($el.original_width) 
       }
       else {
         if (getAxis(position) === 'x') {
           const x = position === 'left' ? val : '-' + val;
           $el.style.transform = `translate3d(${formatSizeVal(x)},0,0)`;
+          $($el).width($el.original_width - val) 
         }
         else {
           const y = position === 'top' ? val : '-' + val;
           $el.style.transform = `translate3d(0,${formatSizeVal(y)},0)`;
+          $($el).width($el.original_width - val) 
         }
       }
     };

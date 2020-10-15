@@ -308,6 +308,7 @@
 
         if (Settings.pushContent && $push_content && _transitionProperty) {
           Styles.add(Helpers.getElementCssTag($push_content), `transition: ${_transitionProperty} ${_transitionDuration}ms ${_transitionFunction}`);
+          //TODO: Work out puhs Content with on resize
         }
 
         Styles.insert();
@@ -393,6 +394,7 @@
         // get page content
         if (!reinit || (reinit && checkForUpdate('pushContent'))) {
           $push_content = Helpers.getElement(Settings.pushContent);
+          $push_content["original_width"] = $($push_content).width()
         }
 
         // remove transition from the nav container so we can update the nav without flickering
@@ -1641,7 +1643,7 @@
           }
           else {
             // create new instance
-            instance = new hcOffcanvasNav(this, args);
+            instance =  hcOffcanvasNav(this, args);
             $.data(this, namespace, instance);
           }
         });
