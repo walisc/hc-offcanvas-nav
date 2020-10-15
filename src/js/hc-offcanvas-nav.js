@@ -72,7 +72,9 @@
       insertBack:         true,
       levelTitleAsBack:   true,
       labelClose:         '',
-      labelBack:          'Back'
+      labelBack:          'Back',
+      minimizeMenuOnClose: false,
+      minimizeMenuOnCloseWidth: 50
     };
 
     // show deprecated messages
@@ -134,6 +136,7 @@
 
       let $toggle = null;
       let $push_content = null;
+      let $navFixedBar = null;
 
       let Model = {};
 
@@ -156,16 +159,37 @@
       let _touchMoved = false;
       let _touchNavTriggered = false;
 
-      if (!Settings.customToggle) {
-        // our toggle
-        $toggle = Helpers.createElement('a', {
-          href: '#',
-          class: `hc-nav-trigger ${navUniqId}`,
-          'aria-label': (Settings.ariaLabels || {}).open
-        }, Helpers.createElement('span'));
+      
 
+      if (!Settings.customToggle) {
+        let $toggleBar = null
+        // our toggle
+        
+
+        if (Settings.minimizeMenuOnClose){
+
+          $toggle = Helpers.createElement('p', {
+            'aria-label': (Settings.ariaLabels || {}).open
+          }, Helpers.createElement('span', {} , Array.from(Array(3).keys()).map(function(num){ return Helpers.createElement('div', {style: `width: ${Settings.minimizeMenuOnCloseWidth-20}px`} , "") })))
+
+          $navFixedBar = Helpers.createElement('div', { class: 'hc-nav-fixed-bar'}, "")
+
+          $toggleBar =Helpers.createElement('div', {
+            style: `width: ${Settings.minimizeMenuOnCloseWidth}`,
+            class: `hc-nav-trigger-fixed ${navUniqId}`,
+            'aria-label': (Settings.ariaLabels || {}).open
+          }, [$toggle, $navFixedBar ]);
+        }
+        else{
+          $toggle = Helpers.createElement('a', {
+            href: '#',
+            class: `hc-nav-trigger ${navUniqId}`,
+            'aria-label': (Settings.ariaLabels || {}).open
+          }, Helpers.createElement('span'))
+        }
+       
         $toggle.addEventListener('click', toggleNav);
-        $originalNav.insertAdjacentElement('afterend', $toggle);
+        $originalNav.insertAdjacentElement('afterend', $toggleBar);
       }
       else {
         // user toggle
@@ -547,6 +571,7 @@
         // call
         createDom(Model, $nav_container, 0, Settings.navTitle);
 
+        //TODO: update
         function createDom(menu, $container, level, title, backIndex, backTitle) {
           const $wrapper = Helpers.createElement('div', {
             class: `nav-wrapper nav-wrapper-${level}`,
@@ -572,11 +597,21 @@
               return;
             }
 
+            let $minimizedMenu = null
+            if (Settings.minimizeMenuOnClose &&  level == 0){
+               $minimizedMenu = Helpers.createElement('ul', {
+                role: '$minimizedMenu',
+                'aria-level': level + 1
+              });
+
+              $navFixedBar.appendChild($minimizedMenu);
+            }
+            
             const $menu = Helpers.createElement('ul', {
               role: 'menu',
               'aria-level': level + 1
             });
-
+            
             $content.appendChild($menu);
 
             // keep original menu classes
@@ -692,6 +727,15 @@
 
               $item.appendChild($item_link);
               $menu.appendChild($item);
+
+              if (Settings.minimizeMenuOnClose && $minimizedMenu != null){
+                const $minimizedMenuItem = Helpers.createElement('li', {
+                  class: 'nav-item'
+                });
+                $minimizedMenuItem.appendChild(Helpers.createElement('a', { href: "#", class: "nav-item-link"}, $item_link.innerHTML[0]))
+                $minimizedMenu.appendChild($minimizedMenuItem)
+                
+              }
 
               // keep original menu item classes
               if (Settings.keepClasses && item.htmlClass) {
@@ -1340,7 +1384,13 @@
         _open = false;
 
         if ($push_content) {
-          Helpers.setTransform($push_content, false);
+          if (Settings.minimizeMenuOnClose)
+          {
+            Helpers.setTransform($push_content, Settings.minimizeMenuOnCloseWidth, Settings.position);
+          }
+          else{
+            Helpers.setTransform($push_content, 0, Settings.position);
+          }
         }
 
         $nav.classList.remove(navOpenClass);

@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <link href="../dist/hc-offcanvas-nav.css" rel="stylesheet" type="text/css" />
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        
+        <div>
+            <nav id="main-nav">
+                <ul>
+                  <li><a href="#">Home</a></li>
+                  <li><a href="#">About</a></li>
+                  <li>
+                    <a href="#">Services</a>
+                    <ul>
+                      <li>
+                        <a href="#">Hosting</a>
+                        <ul>
+                          <li><a href="#">Private Server</a></li>
+                          <li><a href="#">Managed Hosting</a></li>
+                        </ul>
+                      </li>
+                      <li><a href="#">Domains</a></li>
+                      <li><a href="#">Websites</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="#">Contact</a></li>
+                </ul>
+              </nav>
+        </div>
+
+        <div id="content" >
+          
+          <div class="row">
+              <div class="col-md-1">.col-md-1</div>
+              <div class="col-md-1">.col-md-2</div>
+              <div class="col-md-1">.col-md-3</div>
+              <div class="col-md-1">.col-md-4</div>
+              <div class="col-md-1">.col-md-5</div>
+              <div class="col-md-1">.col-md-6</div>
+              <div class="col-md-1">.col-md-7</div>
+              <div class="col-md-1">.col-md-8</div>
+              <div class="col-md-1">.col-md-9</div>
+              <div class="col-md-1">.col-md-10</div>
+              <div class="col-md-1">.col-md-11</div>
+              <div class="col-md-1">.col-md-12</div>
+            </div>
+        </div>
+
+        
+
+          <script
+  src="https://code.jquery.com/jquery-1.12.4.min.js"
+  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+  crossorigin="anonymous"></script>
+
+          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" ></script>
+          <script src="../src/js/hc-offcanvas-nav.js" ></script>
+          <script src="../src/js/hc-offcanvas-nav.helpers.js" ></script>
+          <script>
+             jQuery(document).ready(function($) {
+
+                $('#main-nav').hcOffcanvasNav({
+                  navTitle: 'All Categories',
+                  levelTitles: true,
+                  levelTitleAsBack: true,
+                  expanded: true,
+                  pushContent: "#content",
+                  disableBody: false,
+                  minimizeMenuOnClose: true
+                });
+
+            });
+          </script>
+    </body>
+</html>
