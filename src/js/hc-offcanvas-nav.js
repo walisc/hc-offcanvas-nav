@@ -130,6 +130,11 @@
       // this is our new nav element
       const $nav = Helpers.createElement('nav', {role: 'navigation'});
       const $nav_container = Helpers.createElement('div', {class: 'nav-container'});
+      $nav_container.addEventListener('mouseleave',  function(e){
+        if($nav["toggleByHover"]){
+          toggleNavFunc()(e)
+        }
+      });
 
       $nav.addEventListener('click', Helpers.stopPropagation);
       $nav.appendChild($nav_container);
@@ -143,10 +148,6 @@
       let _open = false; // is nav currently open
       let _initExpanded = false; // should nav be opened on init
       let _nextActiveLevel = null; // level that should be open next
-      let _levels = {
-        currentLevel: 0,
-        currentIndex: 0
-      }
       let _top = 0; // to remember scroll position
       let _containerWidth = 0;
       let _containerHeight = 0;
@@ -585,11 +586,6 @@
           const $content = Helpers.createElement('div', {class: 'nav-content'});
 
           $wrapper.addEventListener('click', Helpers.stopPropagation);
-          $wrapper.addEventListener('mouseleave',  function(e){
-            if($nav["toggleByHover"]){
-              toggleNavFunc()(e)
-            }
-          });
 
           $wrapper.appendChild($content);
           $container.appendChild($wrapper);
@@ -919,7 +915,11 @@
               $($close_a).show()
               $nav["toggleByHover"] = false
             }));
-
+            $close_b.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.keyCode === 13) {
+                untrapFocus();
+              }
+            });
 
             const $close_a = Helpers.createElement('a', {
               href: '#',
@@ -1516,9 +1516,6 @@
             e.stopPropagation();
    
             if (_open){
-              if ($nav["toggleByHover"] && _levels.currentLevel > 0){
-                return
-              }
               $nav["toggleByHover"] = false
               closeNav();
             }
@@ -1531,7 +1528,6 @@
      
 
       function openLevel(l, i, transition = true) {
-        
         const $checkbox = document.querySelector(`#${navUniqId}-${l}-${i}`);
         const uniqid = $checkbox.value;
         const $li = $checkbox.parentNode;
@@ -1573,15 +1569,13 @@
           }
         }
 
-        _levels = {
-          currentLevel: l,
-          currentIndex: i
-        }
-
         // trigger level open event
         if ($nav._eventListeners['open.level']) {
           $nav._eventListeners['open.level'].forEach((ev) => {
-            ev.fn(Helpers.customEventObject('open.level', $nav, $sub_wrap, Object.assign({}, _levels)), Object.assign({}, Settings));
+            ev.fn(Helpers.customEventObject('open.level', $nav, $sub_wrap, {
+              currentLevel: l,
+              currentIndex: i
+            }), Object.assign({}, Settings));
           });
         }
 
@@ -1645,17 +1639,16 @@
           }
         }
 
-        _levels = {
-          currentLevel: l - 1,
-          currentIndex: activeIndex()
-        }
         // trigger level open event
         if (l > 0 && $nav._eventListeners['close.level']) {
           const $wrap = document.querySelector(`#${navUniqId}-${l}-${i}`).closest('.nav-wrapper');
 
           $nav._eventListeners['close.level'].forEach((ev) => {
-            ev.fn(Helpers.customEventObject('close.level', $nav, $wrap, Object.assign({}, _levels)), Object.assign({}, Settings));
-          });         
+            ev.fn(Helpers.customEventObject('close.level', $nav, $wrap, {
+              currentLevel: l - 1,
+              currentIndex: activeIndex()
+            }), Object.assign({}, Settings));
+          });
         }
 
         if (_keyboard) {
