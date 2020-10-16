@@ -398,6 +398,11 @@ body.hc-nav-open {
 .hc-offcanvas-nav .nav-back a[disabled] {
   color: rgba(255, 255, 255, 0.5);
 }
+.hc-offcanvas-nav .nav-item-link i,
+.hc-offcanvas-nav li.nav-close a i,
+.hc-offcanvas-nav .nav-back a i {
+  padding-right: 17px;
+}
 .hc-offcanvas-nav:not(.touch-device) li:not(.nav-item-custom) a:not([disabled]):hover {
   background: #31679e;
 }

@@ -7,7 +7,9 @@ JavaScript library for creating off-canvas multi-level navigations, using ARIA. 
 
 <img src="https://somewebmedia.github.io/hc-offcanvas-nav/hc-offcanvas-nav.png" width="440">
 
-
+### Centrid Note
+- Need to work on width size of content on window resize
+- docuent new push and minified navbar
 
 ### Features
 - Multi-level menu support

@@ -200,7 +200,7 @@
           }, [$toggle, $navFixedBar ]);
         }
         else{
-          $toggle = Helpers.createElement('a', {
+          $toggle = $toggleBar = Helpers.createElement('a', {
             href: '#',
             class: `hc-nav-trigger ${navUniqId}`,
             'aria-label': (Settings.ariaLabels || {}).open
@@ -778,9 +778,12 @@
                   style: `width: ${Settings.minimizeMenuOnCloseWidth}px`
                 });
 
-                let $minimizedMenuLink = Helpers.createElement('a', { href: "#", class: "nav-item-link"}, $item_link.text.length > 0 ? $item_link.text[0] : "")
-                $minimizedMenuLink.addEventListener('mouseenter', toggleNavFunc(true))
-                //$minimizedMenuLink.addEventListener('mouseleave',)
+                let $ogitemIcon = $item_link.querySelector("i:first-of-type")
+                let $itemIcon = $ogitemIcon != null ? Helpers.clone($ogitemIcon, false, false) : null
+
+                
+                let $minimizedMenuLink = Helpers.createElement('a', { href: "#", class: "nav-item-link"}, $itemIcon != null ? $itemIcon :  $item_link.text.length > 0 ? $item_link.text[0] : "")
+                $minimizedMenuLink.addEventListener('mouseenter', toggleNavFunc(true))d
 
                 $minimizedMenuItem.appendChild($minimizedMenuLink)
                 $minimizedMenu.appendChild($minimizedMenuItem)

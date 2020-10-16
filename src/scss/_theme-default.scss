@@ -52,6 +52,10 @@ $hc-offcanvas-nav-text-size:          14px !default;
     &[disabled] {
       color: rgba($hc-offcanvas-nav-text-color, .5);
     }
+
+    i {
+      padding-right: 17px;
+    }
   }
 
   &:not(.touch-device) {
@@ -219,7 +223,7 @@ $hc-offcanvas-nav-text-size:          14px !default;
     padding-left: 10px;
 
   }
-  
+
   .nav-title  {
 
     margin-bottom: 0px;
