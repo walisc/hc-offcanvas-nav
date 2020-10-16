@@ -493,6 +493,11 @@ body.hc-nav-open {
 .hc-offcanvas-nav .nav-content > .nav-close.has-label + ul {
   margin-top: -1px;
 }
+.hc-offcanvas-nav .nav-logo {
+  padding-bottom: 20px;
+  padding-top: 20px;
+  padding-left: 10px;
+}
 .hc-offcanvas-nav .nav-title {
   margin-bottom: 0px;
 }

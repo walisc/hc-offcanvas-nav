@@ -59,6 +59,11 @@
       levelTitles:        true,
       closeOpenLevels:    true,
       closeActiveLevel:   false,
+      navHeader:          {
+                            title: null,
+                            icon: null,
+                            logo: null
+                          },
       navTitle:           null,
       navClass:           '',
       disableBody:        true,
@@ -90,6 +95,10 @@
       close:   'Close Menu',
       submenu: 'Submenu'
     }, options.ariaLabels);
+
+    if (Settings.navHeader.title == null){
+      Settings.navHeader.title = Settings.navTitle
+    }
 
     let UpdatedSettings = [];
 
@@ -175,7 +184,12 @@
 
           $toggle = Helpers.createElement('p', {
             'aria-label': (Settings.ariaLabels || {}).open
-          }, Helpers.createElement('span', {} , Array.from(Array(3).keys()).map(function(num){ return Helpers.createElement('div', {style: `width: ${Settings.minimizeMenuOnCloseWidth-20}px`} , "") })))
+          }, Helpers.createElement('span', {} , Settings.navHeader.icon ? 
+                 Helpers.createElement('img', {
+                    src:  Settings.navHeader.icon,
+                    style: `width: ${Settings.minimizeMenuOnCloseWidth-20}px`
+                  }) :
+                 Array.from(Array(3).keys()).map(function(num){ return Helpers.createElement('div', {style: `width: ${Settings.minimizeMenuOnCloseWidth-20}px`} , "") })))
 
           $navFixedBar = Helpers.createElement('div', { class: 'hc-nav-fixed-bar'}, "")
 
@@ -574,10 +588,10 @@
         }
 
         // call
-        createDom(Model, $nav_container, 0, Settings.navTitle);
+        createDom(Model, $nav_container, 0, Settings.navHeader);
 
         //TODO: update
-        function createDom(menu, $container, level, title, backIndex, backTitle) {
+        function createDom(menu, $container, level, navHeader, backIndex, backNavHeader) {
           const $wrapper = Helpers.createElement('div', {
             class: `nav-wrapper nav-wrapper-${level}`,
             'data-level': level,
@@ -591,11 +605,32 @@
           $container.appendChild($wrapper);
 
           // titles
-          if (title && (level === 0 || (level > 0 && Settings.levelOpen === 'overlap'))) {
+          if (level === 0 ){
+            let $headerLogo = null
+            if (navHeader.logo ){
+              $headerLogo = Helpers.createElement('img', {
+                src: navHeader.logo,
+                style: `width: ${Settings.width}`,
+                class: level === 0 ? 'nav-title nav-logo' + (Settings.insertClose === true && !Settings.labelClose ? ' followed-empty-close' : '') : 'level-title'
+              });
+            }
+            else if (navHeader.icon){
+
+            }else if (navHeader.title){
+              $headerLogo = Helpers.createElement('h2', {
+                class: level === 0 ? 'nav-title' + (Settings.insertClose === true && !Settings.labelClose ? ' followed-empty-close' : '') : 'level-title'
+              }, navHeader.title);
+            }
+            if ($headerLogo){
+              $content.insertBefore($headerLogo, $content.firstChild)
+            }
+           
+          }else if (level > 0 && Settings.levelOpen === 'overlap'){
             $content.insertBefore(Helpers.createElement('h2', {
               class: level === 0 ? 'nav-title' + (Settings.insertClose === true && !Settings.labelClose ? ' followed-empty-close' : '') : 'level-title'
-            }, title), $content.firstChild);
+            }, navHeader.title), $content.firstChild)
           }
+
 
           menu.forEach((nav, i_nav) => {
             if (nav.tagName !== 'UL') {
@@ -625,8 +660,8 @@
               $menu.classList.add.apply($menu.classList, nav.htmlClass.split(' '));
             }
 
-            if (i_nav === 0 && title) {
-              $menu.setAttribute('aria-label', title);
+            if (i_nav === 0 && navHeader.title) {
+              $menu.setAttribute('aria-label', navHeader.title);
             }
 
             if (nav.id) {
@@ -867,7 +902,7 @@
 
                 _indexes[nextLevel]++;
 
-                createDom(item.subnav, $item, nextLevel, nav_title, _indexes[nextLevel]-1, title);
+                createDom(item.subnav, $item, nextLevel, Object.assign({}, navHeader, {title: nav_title}) , _indexes[nextLevel]-1, Object.assign({}, navHeader));
               }
             });
           });
@@ -876,7 +911,7 @@
           if (level && typeof backIndex !== 'undefined') {
             if (Settings.insertBack !== false && Settings.levelOpen === 'overlap') {
               const $children_menus = Helpers.children($content, 'ul');
-              const backLabel = (Settings.levelTitleAsBack ? (backTitle || Settings.labelBack) : Settings.labelBack) || '';
+              const backLabel = (Settings.levelTitleAsBack ? (backNavHeader.title || Settings.labelBack) : Settings.labelBack) || '';
               const $back_a = Helpers.createElement('a', {href: '#', class: 'nav-back-button', role: 'menuitem', tabindex: 0}, [
                 backLabel,
                 Helpers.createElement('span')
@@ -904,6 +939,7 @@
               return Helpers.createElement('a', {
                 href: '#',
                 class: id + (Settings.labelClose ? ' has-label' : ''),
+                style: Settings.navHeader.logo != null ? 'top: -80px' : '',
                 role: 'menuitem',
                 tabindex: 0,
                 'aria-label': !Settings.labelClose ? (Settings.ariaLabels || {}).close : ''
@@ -929,7 +965,7 @@
               }
             });
 
-            if (title && Settings.insertClose === true) {
+            if (navHeader.title && Settings.insertClose === true) {
               // after nav title
               $content.insertBefore(Helpers.createElement('div', {
                 class: 'nav-close'
