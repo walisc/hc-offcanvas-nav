@@ -9,6 +9,36 @@ $hc-offcanvas-nav-text-size:          14px !default;
   @include hc-hamburger;
 }
 
+.nav-freeze-button {
+  
+  &:focus{
+    outline:unset
+  }
+  
+  span {
+    width: 45px;
+    position: absolute;
+    top: 15;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    cursor: pointer;
+    transition: background .1s ease;
+
+    
+    div{
+        height: 3px;
+        background-color: white;
+        margin: 6px auto;
+        }
+    }
+
+  .nav-close-button {
+    position: relative;
+    display: block;
+  }
+}
+
 .hc-nav-trigger-fixed {
   position: absolute;
 	-webkit-user-select: none;
@@ -49,7 +79,6 @@ $hc-offcanvas-nav-text-size:          14px !default;
       list-style: none;
       padding-top: 14px;
       padding-bottom: 14px;
-      width: 50px;
       border-bottom: 1px solid darken($hc-offcanvas-nav-background-color, 6%);
       .nav-item-link{
         padding: 14px 17px;

@@ -143,6 +143,10 @@
       let _open = false; // is nav currently open
       let _initExpanded = false; // should nav be opened on init
       let _nextActiveLevel = null; // level that should be open next
+      let _levels = {
+        currentLevel: 0,
+        currentIndex: 0
+      }
       let _top = 0; // to remember scroll position
       let _containerWidth = 0;
       let _containerHeight = 0;
@@ -188,7 +192,7 @@
           }, Helpers.createElement('span'))
         }
        
-        $toggle.addEventListener('click', toggleNav);
+        $toggle.addEventListener('click', toggleNavFunc());
         $originalNav.insertAdjacentElement('afterend', $toggleBar);
       }
       else {
@@ -197,7 +201,7 @@
 
         if ($toggle) {
           $toggle.classList.add('hc-nav-trigger', navUniqId);
-          $toggle.addEventListener('click', toggleNav);
+          $toggle.addEventListener('click', toggleNavFunc());
         }
       }
 
@@ -581,6 +585,12 @@
           const $content = Helpers.createElement('div', {class: 'nav-content'});
 
           $wrapper.addEventListener('click', Helpers.stopPropagation);
+          $wrapper.addEventListener('mouseleave',  function(e){
+            if($nav["toggleByHover"]){
+              toggleNavFunc()(e)
+            }
+          });
+
           $wrapper.appendChild($content);
           $container.appendChild($wrapper);
 
@@ -632,6 +642,9 @@
 
               // item has custom content
               if (item.custom) {
+                if (Settings.minimizeMenuOnCloseWidth){
+                  throw new Error("Can't use custom li elements when minimizeMenuOnCloseWidth is true")
+                }
 
                 const $custom_item = Helpers.createElement('li', {class: 'nav-item nav-item-custom'},
                   Helpers.createElement('div', {class: 'nav-custom-content'}, Array.prototype.map.call($item_content, (el) => {
@@ -730,9 +743,15 @@
 
               if (Settings.minimizeMenuOnClose && $minimizedMenu != null){
                 const $minimizedMenuItem = Helpers.createElement('li', {
-                  class: 'nav-item'
+                  class: 'nav-item',
+                  style: `width: ${Settings.minimizeMenuOnCloseWidth}px`
                 });
-                $minimizedMenuItem.appendChild(Helpers.createElement('a', { href: "#", class: "nav-item-link"}, $item_link.innerHTML[0]))
+
+                let $minimizedMenuLink = Helpers.createElement('a', { href: "#", class: "nav-item-link"}, $item_link.text.length > 0 ? $item_link.text[0] : "")
+                $minimizedMenuLink.addEventListener('mouseenter', toggleNavFunc(true))
+                //$minimizedMenuLink.addEventListener('mouseleave',)
+
+                $minimizedMenuItem.appendChild($minimizedMenuLink)
                 $minimizedMenu.appendChild($minimizedMenuItem)
                 
               }
@@ -884,6 +903,24 @@
 
           // insert close button
           if (level === 0 && Settings.insertClose !== false) {
+
+            const $close_b = Helpers.createElement('a', {
+              href: '#',
+              class: 'nav-freeze-button' + (Settings.labelClose ? ' has-label' : ''),
+              role: 'menuitem',
+              tabindex: 0,
+              'aria-label': !Settings.labelClose ? (Settings.ariaLabels || {}).close : ''
+            },
+            Helpers.createElement('span', {} , Array.from(Array(3).keys()).map(function(num){ return Helpers.createElement('div', {style: `width: ${Settings.minimizeMenuOnCloseWidth-20}px`} , "") }))
+            );
+
+            $close_b.addEventListener('click', Helpers.preventClick(function(e){
+              $($close_b).hide()
+              $($close_a).show()
+              $nav["toggleByHover"] = false
+            }));
+
+
             const $close_a = Helpers.createElement('a', {
               href: '#',
               class: 'nav-close-button' + (Settings.labelClose ? ' has-label' : ''),
@@ -905,13 +942,13 @@
               // after nav title
               $content.insertBefore(Helpers.createElement('div', {
                 class: 'nav-close'
-              }, $close_a), $content.children[1]);
+              }, [$close_a, $close_b]), $content.children[1]);
             }
             else if (Settings.insertClose === true) {
               // before nav content
               $content.insertBefore(Helpers.createElement('div', {
                 class: 'nav-close'
-              }, $close_a), $content.firstChild);
+              }, [$close_a, $close_b]), $content.firstChild);
             }
             else {
               // as menu item
@@ -1317,6 +1354,14 @@
 
         _open = true;
 
+        if ($nav["toggleByHover"]){
+          $(Helpers.getElement(".nav-close-button")).hide()
+          $(Helpers.getElement(".nav-freeze-button")).show()
+        }else{
+          $(Helpers.getElement(".nav-freeze-button")).hide()
+          $(Helpers.getElement(".nav-close-button")).show()
+        }
+        
         $nav.style.visibility = 'visible';
         $nav.setAttribute('aria-hidden', false);
         $nav.classList.add(navOpenClass);
@@ -1464,15 +1509,29 @@
         }, _transitionDuration);
       }
 
-      function toggleNav(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (_open) closeNav();
-        else openNav();
+      function toggleNavFunc(hoverBased=false){
+          
+          return  function toggleNav(e) {
+            e.preventDefault();
+            e.stopPropagation();
+   
+            if (_open){
+              if ($nav["toggleByHover"] && _levels.currentLevel > 0){
+                return
+              }
+              $nav["toggleByHover"] = false
+              closeNav();
+            }
+            else {
+              $nav["toggleByHover"] = hoverBased
+              openNav();
+            }
+          }
       }
+     
 
       function openLevel(l, i, transition = true) {
+        
         const $checkbox = document.querySelector(`#${navUniqId}-${l}-${i}`);
         const uniqid = $checkbox.value;
         const $li = $checkbox.parentNode;
@@ -1514,13 +1573,15 @@
           }
         }
 
+        _levels = {
+          currentLevel: l,
+          currentIndex: i
+        }
+
         // trigger level open event
         if ($nav._eventListeners['open.level']) {
           $nav._eventListeners['open.level'].forEach((ev) => {
-            ev.fn(Helpers.customEventObject('open.level', $nav, $sub_wrap, {
-              currentLevel: l,
-              currentIndex: i
-            }), Object.assign({}, Settings));
+            ev.fn(Helpers.customEventObject('open.level', $nav, $sub_wrap, Object.assign({}, _levels)), Object.assign({}, Settings));
           });
         }
 
@@ -1584,16 +1645,17 @@
           }
         }
 
+        _levels = {
+          currentLevel: l - 1,
+          currentIndex: activeIndex()
+        }
         // trigger level open event
         if (l > 0 && $nav._eventListeners['close.level']) {
           const $wrap = document.querySelector(`#${navUniqId}-${l}-${i}`).closest('.nav-wrapper');
 
           $nav._eventListeners['close.level'].forEach((ev) => {
-            ev.fn(Helpers.customEventObject('close.level', $nav, $wrap, {
-              currentLevel: l - 1,
-              currentIndex: activeIndex()
-            }), Object.assign({}, Settings));
-          });
+            ev.fn(Helpers.customEventObject('close.level', $nav, $wrap, Object.assign({}, _levels)), Object.assign({}, Settings));
+          });         
         }
 
         if (_keyboard) {

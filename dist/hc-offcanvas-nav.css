@@ -277,6 +277,29 @@ body.hc-nav-open {
   transform: rotate(-90deg) translate3d(10px, 0, 0);
 }
 
+.nav-freeze-button:focus {
+  outline: unset;
+}
+.nav-freeze-button span {
+  width: 45px;
+  position: absolute;
+  top: 15;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+.nav-freeze-button span div {
+  height: 3px;
+  background-color: white;
+  margin: 6px auto;
+}
+.nav-freeze-button .nav-close-button {
+  position: relative;
+  display: block;
+}
+
 .hc-nav-trigger-fixed {
   position: absolute;
   -webkit-user-select: none;
@@ -310,7 +333,6 @@ body.hc-nav-open {
   list-style: none;
   padding-top: 14px;
   padding-bottom: 14px;
-  width: 50px;
   border-bottom: 1px solid #2c5d8f;
 }
 .hc-nav-trigger-fixed ul li:first-of-type {
