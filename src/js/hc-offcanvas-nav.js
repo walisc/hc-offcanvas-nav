@@ -783,7 +783,7 @@
 
                 
                 let $minimizedMenuLink = Helpers.createElement('a', { href: "#", class: "nav-item-link"}, $itemIcon != null ? $itemIcon :  $item_link.text.length > 0 ? $item_link.text[0] : "")
-                $minimizedMenuLink.addEventListener('mouseenter', toggleNavFunc(true))d
+                $minimizedMenuLink.addEventListener('mouseenter', toggleNavFunc(true))
 
                 $minimizedMenuItem.appendChild($minimizedMenuLink)
                 $minimizedMenu.appendChild($minimizedMenuItem)
