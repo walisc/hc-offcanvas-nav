@@ -14,11 +14,11 @@ $hc-offcanvas-nav-text-size:          14px !default;
   &:focus{
     outline:unset
   }
-  
+
   span {
     width: 45px;
     position: absolute;
-    top: 15;
+    top: 18;
     right: 0;
     bottom: 0;
     text-align: center;
@@ -55,8 +55,8 @@ $hc-offcanvas-nav-text-size:          14px !default;
     color: white;
     font-size: round($hc-offcanvas-nav-text-size * 1.35);
     font-weight: normal;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
     margin-bottom: unset;
     color: darken($hc-offcanvas-nav-background-color, 20%);
 

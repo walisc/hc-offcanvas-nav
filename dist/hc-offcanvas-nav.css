@@ -283,7 +283,7 @@ body.hc-nav-open {
 .nav-freeze-button span {
   width: 45px;
   position: absolute;
-  top: 15;
+  top: 18;
   right: 0;
   bottom: 0;
   text-align: center;
@@ -316,8 +316,8 @@ body.hc-nav-open {
   color: white;
   font-size: 19px;
   font-weight: normal;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 15px;
+  padding-bottom: 15px;
   margin-bottom: unset;
   color: #1b3958;
 }
@@ -368,7 +368,7 @@ body.hc-nav-open {
   font-size: 19px;
   font-weight: normal;
   padding: 20px 17px;
-  color: #1b3958;
+  color: #fff;
 }
 .hc-offcanvas-nav .nav-content > h2:not(.nav-title):not(.level-title), .hc-offcanvas-nav .nav-content > h3:not(.nav-title):not(.level-title), .hc-offcanvas-nav .nav-content > h4:not(.nav-title):not(.level-title), .hc-offcanvas-nav .nav-content > h5:not(.nav-title):not(.level-title), .hc-offcanvas-nav .nav-content > h6:not(.nav-title):not(.level-title) {
   font-size: 16px;
@@ -492,6 +492,9 @@ body.hc-nav-open {
 }
 .hc-offcanvas-nav .nav-content > .nav-close.has-label + ul {
   margin-top: -1px;
+}
+.hc-offcanvas-nav .nav-title {
+  margin-bottom: 0px;
 }
 .hc-offcanvas-nav .nav-title.followed-empty-close {
   padding-right: 55px;

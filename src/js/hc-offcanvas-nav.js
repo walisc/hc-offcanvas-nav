@@ -900,39 +900,30 @@
           // insert close button
           if (level === 0 && Settings.insertClose !== false) {
 
-            const $close_b = Helpers.createElement('a', {
-              href: '#',
-              class: 'nav-freeze-button' + (Settings.labelClose ? ' has-label' : ''),
-              role: 'menuitem',
-              tabindex: 0,
-              'aria-label': !Settings.labelClose ? (Settings.ariaLabels || {}).close : ''
-            },
-            Helpers.createElement('span', {} , Array.from(Array(3).keys()).map(function(num){ return Helpers.createElement('div', {style: `width: ${Settings.minimizeMenuOnCloseWidth-20}px`} , "") }))
+            function createCloseBtn(id, innerElement){
+              return Helpers.createElement('a', {
+                href: '#',
+                class: id + (Settings.labelClose ? ' has-label' : ''),
+                role: 'menuitem',
+                tabindex: 0,
+                'aria-label': !Settings.labelClose ? (Settings.ariaLabels || {}).close : ''
+              }, innerElement);
+            }
+            const $freezeMenuBtn = createCloseBtn('nav-freeze-button',
+              Helpers.createElement('span', {} , Array.from(Array(3).keys()).map(function(num){ return Helpers.createElement('div', {style: `width: ${Settings.minimizeMenuOnCloseWidth-20}px`} , "") }))
             );
 
-            $close_b.addEventListener('click', Helpers.preventClick(function(e){
-              $($close_b).hide()
-              $($close_a).show()
+            $freezeMenuBtn.addEventListener('click', Helpers.preventClick(function(e){
+              $($freezeMenuBtn).hide()
+              $($closeBtn).show()
               $nav["toggleByHover"] = false
             }));
-            $close_b.addEventListener('keydown', (e) => {
-              if (e.key === 'Enter' || e.keyCode === 13) {
-                untrapFocus();
-              }
-            });
 
-            const $close_a = Helpers.createElement('a', {
-              href: '#',
-              class: 'nav-close-button' + (Settings.labelClose ? ' has-label' : ''),
-              role: 'menuitem',
-              tabindex: 0,
-              'aria-label': !Settings.labelClose ? (Settings.ariaLabels || {}).close : ''
-            },
-              [Settings.labelClose || '', Helpers.createElement('span')]
-            );
 
-            $close_a.addEventListener('click', Helpers.preventClick(closeNav));
-            $close_a.addEventListener('keydown', (e) => {
+            const $closeBtn = createCloseBtn('nav-close-button', [Settings.labelClose || '', Helpers.createElement('span')]);
+
+            $closeBtn.addEventListener('click', Helpers.preventClick(closeNav));
+            $closeBtn.addEventListener('keydown', (e) => {
               if (e.key === 'Enter' || e.keyCode === 13) {
                 untrapFocus();
               }
@@ -942,20 +933,20 @@
               // after nav title
               $content.insertBefore(Helpers.createElement('div', {
                 class: 'nav-close'
-              }, [$close_a, $close_b]), $content.children[1]);
+              }, [$closeBtn, $freezeMenuBtn]), $content.children[1]);
             }
             else if (Settings.insertClose === true) {
               // before nav content
               $content.insertBefore(Helpers.createElement('div', {
                 class: 'nav-close'
-              }, [$close_a, $close_b]), $content.firstChild);
+              }, [$closeBtn, $freezeMenuBtn]), $content.firstChild);
             }
             else {
               // as menu item
               const $nav_ul = Helpers.children($content, 'ul');
-              const $close = Helpers.createElement('li', {class: 'nav-item nav-close'}, $close_a);
+              const $close = Helpers.createElement('li', {class: 'nav-item nav-close'}, $closeBtn);
 
-              Helpers.wrap($close_a, Helpers.createElement('div', {class: 'nav-item-wrapper'}));
+              Helpers.wrap($closeBtn, Helpers.createElement('div', {class: 'nav-item-wrapper'}));
               Helpers.insertAt($close, Settings.insertClose, $nav_ul);
             }
           }
