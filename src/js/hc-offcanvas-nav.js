@@ -610,7 +610,7 @@
             if (navHeader.logo ){
               $headerLogo = Helpers.createElement('img', {
                 src: navHeader.logo,
-                style: `width: ${Settings.width}`,
+                style: `width: ${Settings.width}px; max-width: ${Settings.width}px `,
                 class: level === 0 ? 'nav-title nav-logo' + (Settings.insertClose === true && !Settings.labelClose ? ' followed-empty-close' : '') : 'level-title'
               });
             }
